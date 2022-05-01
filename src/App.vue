@@ -4,35 +4,9 @@ import { ref, computed } from 'vue'
 
 const orderBy = ref('name_asc')
 
+const baseUrl = import.meta.env.BASE_URL
+
 const originAssets = rarity
-  .map(({ properties, ...asset }) => {
-    let rarity = 1
-    for (const property of properties) {
-      rarity *= property.count / property.total
-    }
-    return {
-      ...asset,
-      properties: properties.sort((a, b) => a.type.localeCompare(b.type)),
-      rarity,
-    }
-  })
-  .sort((a, b) => a.rarity - b.rarity)
-  .map((asset, assetIndex) => {
-    return {
-      ...asset,
-      rank: assetIndex + 1,
-    }
-  })
-
-for (const [assetIndex, asset] of originAssets.entries()) {
-  if (assetIndex > 0) {
-    const prevAsset = originAssets[assetIndex - 1]
-    if (prevAsset.rarity === asset.rarity) {
-      asset.rank = prevAsset.rank
-    }
-  }
-}
-
 const assets = computed(() => {
   if (orderBy.value === 'name_asc') {
     return originAssets.sort((a, b) => a.name.localeCompare(b.name))
@@ -70,7 +44,7 @@ function formatRate(n: number) {
           <a target="_blank" :href="`https://opensea.io/assets/${asset.contractAddress}/${asset.tokenId}`">
             <div class="rounded overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
               <div class="overflow-hidden aspect-square">
-                <img :src="`../data/${asset.imageFile}`" class="block object-cover w-full h-full" />
+                <img :src="`${baseUrl}${asset.imageFile}`" class="block object-cover w-full h-full" />
               </div>
               <div class="px-4 pt-2 pb-4 dark:bg-gray-900">
                 <div class="flex justify-between items-center">
